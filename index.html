@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Smart stopwatch that automatically starts when you appear on camera and pauses when you leave">
+    <meta name="keywords" content="stopwatch, camera detection, automatic timer, web timer, productivity tool">
+    <meta name="author" content="Your Name">
+    <meta property="og:title" content="Auto Camera Stopwatch">
+    <meta property="og:description" content="Smart stopwatch that works with your webcam">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourwebsite.com">
+    <title>Auto Camera Stopwatch | Smart Webcam Timer</title>
+    
+    <!-- Google AdSense (replace with your own publisher ID) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_ADSENSE_ID" crossorigin="anonymous"></script>
+    
+    <style>
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #34a853;
+            --accent-color: #ea4335;
+            --text-color: #333;
+            --light-gray: #f5f5f5;
+            --dark-gray: #757575;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-gray);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .main-content {
+                flex-direction: row;
+            }
+        }
+        
+        .camera-section, .stopwatch-section {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        #camera-feed {
+            width: 100%;
+            height: auto;
+            background-color: #000;
+            border-radius: 4px;
+            display: block;
+            margin-bottom: 15px;
+        }
+        
+        .camera-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        button {
+            padding: 10px 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #3367d6;
+        }
+        
+        button:disabled {
+            background-color: var(--dark-gray);
+            cursor: not-allowed;
+        }
+        
+        #stopwatch-display {
+            font-size: 3rem;
+            text-align: center;
+            font-family: monospace;
+            margin: 20px 0;
+            color: var(--text-color);
+        }
+        
+        .stopwatch-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .detection-status {
+            text-align: center;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .person-detected {
+            background-color: rgba(52, 168, 83, 0.2);
+            color: var(--secondary-color);
+        }
+        
+        .person-not-detected {
+            background-color: rgba(234, 67, 53, 0.2);
+            color: var(--accent-color);
+        }
+        
+        .ad-container {
+            width: 100%;
+            margin: 20px 0;
+            text-align: center;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px dashed #ccc;
+        }
+        
+        .ad-label {
+            font-size: 0.8rem;
+            color: var(--dark-gray);
+            margin-bottom: 5px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px 0;
+            border-top: 1px solid #ddd;
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+        
+        .instructions {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .instructions h2 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Auto Camera Stopwatch</h1>
+        <p>A smart stopwatch that automatically starts when you're in frame and pauses when you leave</p>
+    </header>
+    
+    <!-- Top Ad Banner -->
+    <div class="ad-container">
+        <div class="ad-label">Advertisement</div>
+        <!-- Replace with your AdSense code -->
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-YOUR_ADSENSE_ID"
+             data-ad-slot="YOUR_AD_SLOT_ID"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+    
+    <div class="container">
+        <div class="instructions">
+            <h2>How It Works</h2>
+            <ol>
+                <li>Allow camera access when prompted</li>
+                <li>Position yourself in front of the camera</li>
+                <li>The stopwatch will automatically start when you're detected</li>
+                <li>It will pause when you leave the frame</li>
+                <li>Use the manual controls if needed</li>
+            </ol>
+        </div>
+        
+        <div class="main-content">
+            <div class="camera-section">
+                <h3 class="section-title">Camera Feed</h3>
+                <video id="camera-feed" playsinline></video>
+                <div class="camera-controls">
+                    <button id="start-camera">Start Camera</button>
+                    <button id="stop-camera" disabled>Stop Camera</button>
+                </div>
+                <div id="detection-status" class="detection-status person-not-detected">
+                    Person not detected
+                </div>
+            </div>
+            
+            <div class="stopwatch-section">
+                <h3 class="section-title">Stopwatch</h3>
+                <div id="stopwatch-display">00:00:00.000</div>
+                <div class="stopwatch-controls">
+                    <button id="start-stopwatch" disabled>Start</button>
+                    <button id="pause-stopwatch" disabled>Pause</button>
+                    <button id="reset-stopwatch" disabled>Reset</button>
+                </div>
+                
+                <!-- Sidebar Ad -->
+                <div class="ad-container">
+                    <div class="ad-label">Advertisement</div>
+                    <!-- Replace with your AdSense code -->
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-YOUR_ADSENSE_ID"
+                         data-ad-slot="YOUR_AD_SLOT_ID"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Ad Banner -->
+    <div class="ad-container">
+        <div class="ad-label">Advertisement</div>
+        <!-- Replace with your AdSense code -->
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-YOUR_ADSENSE_ID"
+             data-ad-slot="YOUR_AD_SLOT_ID"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+    
+    <footer>
+        <p>&copy; <span id="current-year"></span> Auto Camera Stopwatch. All rights reserved.</p>
+        <p>This website uses camera access for stopwatch functionality but does not store any images or video.</p>
+    </footer>
+    
+    <script>
+        // Set current year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        // DOM elements
+        const cameraFeed = document.getElementById('camera-feed');
+        const startCameraBtn = document.getElementById('start-camera');
+        const stopCameraBtn = document.getElementById('stop-camera');
+        const detectionStatus = document.getElementById('detection-status');
+        const stopwatchDisplay = document.getElementById('stopwatch-display');
+        const startStopwatchBtn = document.getElementById('start-stopwatch');
+        const pauseStopwatchBtn = document.getElementById('pause-stopwatch');
+        const resetStopwatchBtn = document.getElementById('reset-stopwatch');
+        
+        // Stopwatch variables
+        let startTime = 0;
+        let elapsedTime = 0;
+        let timerInterval;
+        let isRunning = false;
+        
+        // Camera and detection variables
+        let stream = null;
+        let detector = null;
+        let detectionInterval = null;
+        let personInFrame = false;
+        
+        // Initialize TensorFlow.js and COCO-SSD model
+        async function loadModel() {
+            try {
+                // Import TensorFlow.js and COCO-SSD only when needed
+                const tf = await import('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.18.0/dist/tf.min.js');
+                const cocossd = await import('https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js');
+                
+                detector = await cocossd.load();
+                console.log('Model loaded successfully');
+                return true;
+            } catch (error) {
+                console.error('Error loading model:', error);
+                return false;
+            }
+        }
+        
+        // Start camera
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                cameraFeed.srcObject = stream;
+                startCameraBtn.disabled = true;
+                stopCameraBtn.disabled = false;
+                
+                // Load model when camera starts
+                const modelLoaded = await loadModel();
+                if (modelLoaded) {
+                    // Start person detection
+                    detectionInterval = setInterval(detectPerson, 500); // Check every 500ms
+                } else {
+                    detectionStatus.textContent = "Model failed to load - using manual controls";
+                    detectionStatus.className = "detection-status person-not-detected";
+                }
+                
+                // Enable stopwatch controls
+                startStopwatchBtn.disabled = false;
+                resetStopwatchBtn.disabled = false;
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+                alert('Could not access the camera. Please ensure you have granted permission.');
+            }
+        }
+        
+        // Stop camera
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                cameraFeed.srcObject = null;
+                stream = null;
+            }
+            
+            if (detectionInterval) {
+                clearInterval(detectionInterval);
+                detectionInterval = null;
+            }
+            
+            startCameraBtn.disabled = false;
+            stopCameraBtn.disabled = true;
+            
+            // Pause stopwatch when camera stops
+            if (isRunning) {
+                pauseStopwatch();
+            }
+            
+            // Disable stopwatch controls
+            startStopwatchBtn.disabled = true;
+            pauseStopwatchBtn.disabled = true;
+            resetStopwatchBtn.disabled = true;
+            
+            // Reset detection status
+            personInFrame = false;
+            detectionStatus.textContent = "Camera off";
+            detectionStatus.className = "detection-status person-not-detected";
+        }
+        
+        // Detect person in camera feed
+        async function detectPerson() {
+            if (!detector || !stream) return;
+            
+            try {
+                const predictions = await detector.detect(cameraFeed);
+                const personDetected = predictions.some(pred => 
+                    pred.class === 'person' && pred.score > 0.7
+                );
+                
+                if (personDetected && !personInFrame) {
+                    // Person entered frame
+                    personInFrame = true;
+                    detectionStatus.textContent = "Person detected - stopwatch running";
+                    detectionStatus.className = "detection-status person-detected";
+                    
+                    // Start stopwatch if not already running
+                    if (!isRunning) {
+                        startStopwatch();
+                    }
+                } else if (!personDetected && personInFrame) {
+                    // Person left frame
+                    personInFrame = false;
+                    detectionStatus.textContent = "Person not detected - stopwatch paused";
+                    detectionStatus.className = "detection-status person-not-detected";
+                    
+                    // Pause stopwatch if running
+                    if (isRunning) {
+                        pauseStopwatch();
+                    }
+                }
+            } catch (error) {
+                console.error('Error during detection:', error);
+            }
+        }
+        
+        // Stopwatch functions
+        function startStopwatch() {
+            if (!isRunning) {
+                startTime = Date.now() - elapsedTime;
+                timerInterval = setInterval(updateStopwatch, 10);
+                isRunning = true;
+                pauseStopwatchBtn.disabled = false;
+                startStopwatchBtn.disabled = true;
+            }
+        }
+        
+        function pauseStopwatch() {
+            if (isRunning) {
+                clearInterval(timerInterval);
+                isRunning = false;
+                pauseStopwatchBtn.disabled = true;
+                startStopwatchBtn.disabled = false;
+            }
+        }
+        
+        function resetStopwatch() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            elapsedTime = 0;
+            stopwatchDisplay.textContent = "00:00:00.000";
+            pauseStopwatchBtn.disabled = true;
+            startStopwatchBtn.disabled = false;
+            
+            // If person is still in frame, restart immediately
+            if (personInFrame) {
+                startStopwatch();
+            }
+        }
+        
+        function updateStopwatch() {
+            const currentTime = Date.now();
+            elapsedTime = currentTime - startTime;
+            
+            // Format time as HH:MM:SS.mmm
+            const hours = Math.floor(elapsedTime / 3600000);
+            const minutes = Math.floor((elapsedTime % 3600000) / 60000);
+            const seconds = Math.floor((elapsedTime % 60000) / 1000);
+            const milliseconds = elapsedTime % 1000;
+            
+            stopwatchDisplay.textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
+        }
+        
+        // Event listeners
+        startCameraBtn.addEventListener('click', startCamera);
+        stopCameraBtn.addEventListener('click', stopCamera);
+        startStopwatchBtn.addEventListener('click', startStopwatch);
+        pauseStopwatchBtn.addEventListener('click', pauseStopwatch);
+        resetStopwatchBtn.addEventListener('click', resetStopwatch);
+        
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            if (detectionInterval) {
+                clearInterval(detectionInterval);
+            }
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+        });
+    </script>
+</body>
+</html>
